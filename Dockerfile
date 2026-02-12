@@ -29,6 +29,9 @@ RUN apt-get update && apt-get install -y \
     locales \
     && rm -rf /var/lib/apt/lists/*
 
+# Force /bin/sh → bash
+RUN ln -sf /bin/bash /bin/sh
+
 # Create lfs user
 RUN useradd -m -s /bin/bash lfs && \
     echo "lfs ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
