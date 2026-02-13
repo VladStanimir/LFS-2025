@@ -2,7 +2,7 @@
 
 set -e
 
-echo "LFS: Binutils Pass 1"
+echo "LFS: Binutils Pass 1 (5.2)"
 
 # Safety: make sure we are the lfs user
 if [ "$(whoami)" != "lfs" ]; then

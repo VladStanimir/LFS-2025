@@ -2,7 +2,7 @@
 
 set -e
 
-echo "LFS: GCC Pass 1"
+echo "LFS: GCC Pass 1 (5.3)"
 
 # Safety checks
 if [ "$(whoami)" != "lfs" ]; then

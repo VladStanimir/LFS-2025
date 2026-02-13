@@ -43,6 +43,9 @@ fi
 echo "Building image $IMAGE_NAME..."
 $ENGINE build -t $IMAGE_NAME .
 
+echo "Cleaning unused intermediate images..."
+$ENGINE image prune -f --filter "dangling=true"
+
 # Remove existing container if it exists
 if $ENGINE container inspect $CONTAINER_NAME >/dev/null 2>&1; then
     echo "Removing existing container: $CONTAINER_NAME..."
