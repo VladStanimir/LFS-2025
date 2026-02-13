@@ -34,19 +34,4 @@ case $(uname -m) in
   x86_64) sudo chown -v lfs $LFS/lib64 ;;
 esac
 
-echo "Preparing LFS user's shell environment..."
-
-echo "Checking for /etc/bash.bashrc (must be disabled)..."
-
-if [ -e /etc/bash.bashrc ]; then
-    echo "Disabling /etc/bash.bashrc ..."
-    sudo mv -v /etc/bash.bashrc /etc/bash.bashrc.NOUSE
-else
-    echo "/etc/bash.bashrc not present. OK."
-fi
-
-echo "Reloading your environment..."
-
-source ~/.bash_profile
-
 echo "Chapter 4 preparation complete."

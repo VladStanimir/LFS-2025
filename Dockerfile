@@ -30,6 +30,11 @@ RUN apt-get update && apt-get install -y \
     locales \
     && rm -rf /var/lib/apt/lists/*
 
+# Disable /etc/bash.bashrc as required by LFS
+RUN if [ -e /etc/bash.bashrc ]; then \
+        mv -v /etc/bash.bashrc /etc/bash.bashrc.NOUSE ; \
+    fi
+
 # Force /bin/sh → bash
 RUN ln -sf /bin/bash /bin/sh
 
@@ -40,28 +45,17 @@ RUN useradd -m -s /bin/bash lfs && \
 # Setup working directory
 RUN mkdir -p /mnt/lfs && chown lfs:lfs /mnt/lfs
 
-# Copy helper scripts into container home
-COPY scripts/version-check.sh /home/lfs/
-COPY scripts/prepare-chapter4.sh /home/lfs/
-COPY scripts/binutils-pass1.sh /home/lfs/
+# Copy LFS bash environment
+COPY lfs-bash-config/lfs-bashrc       /home/lfs/.bashrc
+COPY lfs-bash-config/lfs-bash_profile /home/lfs/.bash_profile
 
-# Copy LFS shell environment files
-COPY scripts/lfs-bashrc /home/lfs/.bashrc
-COPY scripts/lfs-bash_profile /home/lfs/.bash_profile
+# Copy all build scripts
+COPY lfs-build-scripts/ /home/lfs/lfs-build-scripts/
 
-# Fix ownership
-RUN chown lfs:lfs \
-        /home/lfs/.bashrc \
-        /home/lfs/.bash_profile \
-        /home/lfs/version-check.sh \
-        /home/lfs/prepare-chapter4.sh \
-        /home/lfs/binutils-pass1.sh
-
-# Fix permissions
-RUN chmod +x \
-        /home/lfs/version-check.sh \
-        /home/lfs/prepare-chapter4.sh \
-        /home/lfs/binutils-pass1.sh
+# Fix ownership and permissions
+RUN chown -R lfs:lfs /home/lfs && \
+    chmod -R +x /home/lfs/lfs-build-scripts && \
+    chmod 644 /home/lfs/.bashrc /home/lfs/.bash_profile
 
 USER lfs
 WORKDIR /home/lfs
