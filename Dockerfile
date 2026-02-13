@@ -43,22 +43,25 @@ RUN mkdir -p /mnt/lfs && chown lfs:lfs /mnt/lfs
 # Copy helper scripts into container home
 COPY scripts/version-check.sh /home/lfs/
 COPY scripts/prepare-chapter4.sh /home/lfs/
+COPY scripts/binutils-pass1.sh /home/lfs/
 
 # Copy LFS shell environment files
 COPY scripts/lfs-bashrc /home/lfs/.bashrc
 COPY scripts/lfs-bash_profile /home/lfs/.bash_profile
 
-# Fix ownership and permissions
+# Fix ownership
 RUN chown lfs:lfs \
         /home/lfs/.bashrc \
         /home/lfs/.bash_profile \
         /home/lfs/version-check.sh \
         /home/lfs/prepare-chapter4.sh \
+        /home/lfs/binutils-pass1.sh
 
 # Fix permissions
 RUN chmod +x \
         /home/lfs/version-check.sh \
         /home/lfs/prepare-chapter4.sh \
+        /home/lfs/binutils-pass1.sh
 
 USER lfs
 WORKDIR /home/lfs
