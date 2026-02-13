@@ -44,19 +44,24 @@ RUN mkdir -p /mnt/lfs && chown lfs:lfs /mnt/lfs
 COPY scripts/version-check.sh /home/lfs/
 COPY scripts/prepare-chapter4.sh /home/lfs/
 
+# Copy LFS shell environment files
+COPY scripts/lfs-bashrc /home/lfs/.bashrc
+COPY scripts/lfs-bash_profile /home/lfs/.bash_profile
+
 # Fix ownership and permissions
 RUN chown lfs:lfs \
-      /home/lfs/version-check.sh \
-      /home/lfs/prepare-chapter4.sh && \
-    chmod +x \
-      /home/lfs/version-check.sh \
-      /home/lfs/prepare-chapter4.sh
+        /home/lfs/.bashrc \
+        /home/lfs/.bash_profile \
+        /home/lfs/version-check.sh \
+        /home/lfs/prepare-chapter4.sh \
+
+# Fix permissions
+RUN chmod +x \
+        /home/lfs/version-check.sh \
+        /home/lfs/prepare-chapter4.sh \
 
 USER lfs
 WORKDIR /home/lfs
 
-# Environment recommended by LFS
-RUN echo 'export LFS=/mnt/lfs' >> ~/.bashrc
-
-CMD ["/bin/bash"]
+CMD ["/bin/bash", "--login"]
 

@@ -54,5 +54,9 @@ echo "Starting container..."
 exec $ENGINE run -it --name $CONTAINER_NAME \
     -v "$(pwd)/build:/mnt/lfs" \
     -v lfs-sources:/mnt/lfs/sources \
-    $IMAGE_NAME
-
+    $IMAGE_NAME bash -c "
+        echo 'Fixing permissions on /mnt/lfs...' ;
+        sudo chown -R lfs:lfs /mnt/lfs ;
+        sudo chmod a+wt /mnt/lfs/sources ;
+        exec /bin/bash --login
+    "
