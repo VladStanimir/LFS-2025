@@ -16,6 +16,23 @@ fi
 
 echo "Using container engine: $ENGINE"
 
+# Check if required volume exists; if not, auto-create it
+if ! $ENGINE volume inspect lfs-sources >/dev/null 2>&1; then
+    echo "Volume 'lfs-sources' not found."
+    echo "Running ./scripts/run-build-sources.sh to create it..."
+    
+    ./scripts/run-build-sources.sh
+
+    # Verify the volume now exists
+    if ! $ENGINE volume inspect lfs-sources >/dev/null 2>&1; then
+        echo "ERROR: Failed to create volume 'lfs-sources'."
+        exit 1
+    fi
+
+    echo "Volume 'lfs-sources' created successfully."
+fi
+
+
 # Ensure build directory exists
 if [ ! -d "$BUILD_DIR" ]; then
     echo "Creating build directory at $BUILD_DIR..."
@@ -34,6 +51,8 @@ fi
 
 # Run the container with the mounted directory
 echo "Starting container..."
-$ENGINE run -it --name $CONTAINER_NAME \
+exec $ENGINE run -it --name $CONTAINER_NAME \
     -v "$(pwd)/build:/mnt/lfs" \
+    -v lfs-sources:/mnt/lfs/sources \
     $IMAGE_NAME
+

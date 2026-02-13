@@ -5,6 +5,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Install required LFS build packages
 RUN apt-get update && apt-get install -y \
     bash \
+    sudo \
     build-essential \
     bison \
     gawk \
@@ -32,12 +33,24 @@ RUN apt-get update && apt-get install -y \
 # Force /bin/sh → bash
 RUN ln -sf /bin/bash /bin/sh
 
-# Create lfs user
+# Create lfs user with sudo rights
 RUN useradd -m -s /bin/bash lfs && \
     echo "lfs ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 # Setup working directory
 RUN mkdir -p /mnt/lfs && chown lfs:lfs /mnt/lfs
+
+# Copy helper scripts into container home
+COPY scripts/version-check.sh /home/lfs/
+COPY scripts/prepare-chapter4.sh /home/lfs/
+
+# Fix ownership and permissions
+RUN chown lfs:lfs \
+      /home/lfs/version-check.sh \
+      /home/lfs/prepare-chapter4.sh && \
+    chmod +x \
+      /home/lfs/version-check.sh \
+      /home/lfs/prepare-chapter4.sh
 
 USER lfs
 WORKDIR /home/lfs
