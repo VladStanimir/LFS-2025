@@ -19,6 +19,10 @@ SRC_DIR="$LFS/sources"
 PKG="gcc-15.2.0"
 TARBALL="$SRC_DIR/$PKG.tar.xz"
 
+echo "Cleaning up build directory..."
+cd "$SRC_DIR"
+rm -rf "$PKG"
+
 # Check tarball
 if [ ! -f "$TARBALL" ]; then
     echo "ERROR: Missing GCC tarball: $TARBALL"

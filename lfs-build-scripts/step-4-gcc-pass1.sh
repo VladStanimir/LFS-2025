@@ -19,6 +19,10 @@ SRC_DIR="$LFS/sources"
 PKG="gcc-15.2.0"
 TARBALL="$SRC_DIR/$PKG.tar.xz"
 
+echo "Cleaning up..."
+cd "$SRC_DIR"
+rm -rf "$PKG"
+
 # Required dependencies
 MPFR="$SRC_DIR/mpfr-4.2.2.tar.xz"
 GMP="$SRC_DIR/gmp-6.3.0.tar.xz"
@@ -90,6 +94,11 @@ make
 
 echo "Installing GCC Pass 1..."
 make install
+
+echo "Creating GCC Pass 1 limits.h..."
+cd ..
+cat gcc/limitx.h gcc/glimits.h gcc/limity.h > \
+  `dirname $($LFS_TGT-gcc -print-libgcc-file-name)`/include/limits.h
 
 echo "Cleaning up..."
 cd "$SRC_DIR"

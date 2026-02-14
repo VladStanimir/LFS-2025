@@ -19,6 +19,10 @@ SRC_DIR="$LFS/sources"
 PKG="linux-6.16.1"
 TARBALL="$SRC_DIR/$PKG.tar.xz"
 
+echo "Cleaning up..."
+cd "$SRC_DIR"
+rm -rf "$PKG"
+
 # Check tarball exists
 if [ ! -f "$TARBALL" ]; then
     echo "ERROR: Missing tarball: $TARBALL"

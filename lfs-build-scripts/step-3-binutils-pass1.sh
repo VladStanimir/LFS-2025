@@ -20,6 +20,10 @@ SRC_DIR="$LFS/sources"
 PKG="binutils-2.45"
 TARBALL="$SRC_DIR/$PKG.tar.xz"
 
+echo "Cleaning up sources..."
+cd "$SRC_DIR"
+rm -rf "$PKG"
+
 # Check tarball
 if [ ! -f "$TARBALL" ]; then
     echo "ERROR: Tarball not found: $TARBALL"

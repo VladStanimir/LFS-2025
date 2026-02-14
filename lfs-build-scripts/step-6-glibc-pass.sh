@@ -20,6 +20,10 @@ PKG="glibc-2.42"
 TARBALL="$SRC_DIR/$PKG.tar.xz"
 PATCH="$SRC_DIR/glibc-2.42-fhs-1.patch"
 
+echo "Cleaning up build directory..."
+cd "$SRC_DIR"
+rm -rf "$PKG"
+
 # Verify required files exist
 for f in "$TARBALL" "$PATCH"; do
     if [ ! -f "$f" ]; then
@@ -76,9 +80,7 @@ sed '/RTLDLIST=/s@/usr@@g' -i $LFS/usr/bin/ldd
 
 echo "Performing toolchain sanity checks..."
 
-echo 'int main(){}' > dummy.c
-
-$LFS_TGT-gcc dummy.c -Wl,--verbose &> dummy.log
+echo 'int main(){}' | $LFS_TGT-gcc -x c - -v -Wl,--verbose &> dummy.log
 
 echo "Checking interpreter..."
 if ! readelf -l a.out | grep -q ": /lib"; then
