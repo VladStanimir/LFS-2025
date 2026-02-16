@@ -54,7 +54,7 @@ fi
 
 # Run the container with the mounted directory
 echo "Starting container..."
-exec $ENGINE run -it --name $CONTAINER_NAME \
+exec $ENGINE run -it --cap-add=SYS_ADMIN --name $CONTAINER_NAME \
     -v "$(pwd)/build:/mnt/lfs" \
     -v lfs-sources:/mnt/lfs/sources \
     $IMAGE_NAME bash -c "
