@@ -4,7 +4,11 @@ set -e
 
 IMAGE_NAME="lfs-sources-image"
 VOLUME_NAME="lfs-sources"
-SOURCE_DIR_HOST="./sources-image"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(cd -- "$SCRIPT_DIR/.." && pwd)"
+SOURCE_DIR_HOST="$SCRIPT_DIR"
+CHECK_SCRIPT="${CHECK_SCRIPT:-"$PROJECT_DIR/scripts/check-lfs-sources.sh"}"
+DOWNLOAD_SCRIPT="${DOWNLOAD_SCRIPT:-"$PROJECT_DIR/scripts/download-lfs-packages.sh"}"
 
 # Detect container engine
 if command -v podman >/dev/null 2>&1; then
@@ -19,13 +23,13 @@ fi
 echo "Using container engine: $ENGINE"
 
 # Run the check script
-if ! $CHECK_SCRIPT; then
+if ! "$CHECK_SCRIPT"; then
     echo "Some source files were missing. Running download script..."
 
-    $DOWNLOAD_SCRIPT
+    "$DOWNLOAD_SCRIPT"
 
     echo "Re-checking source files..."
-    if ! $CHECK_SCRIPT; then
+    if ! "$CHECK_SCRIPT"; then
         echo "ERROR: Files are still missing after download."
         exit 1
     fi
