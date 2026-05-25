@@ -3,7 +3,7 @@
 IMAGE_NAME="lfs-build-env"
 CONTAINER_NAME="lfs"
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-BUILD_DIR="$SCRIPT_DIR/build"
+BUILD_VOLUME="lfs-build"
 export CHECK_SCRIPT="$SCRIPT_DIR/scripts/check-lfs-sources.sh"
 export DOWNLOAD_SCRIPT="$SCRIPT_DIR/scripts/download-lfs-packages.sh"
 
@@ -35,11 +35,10 @@ if ! "$ENGINE" volume inspect lfs-sources >/dev/null 2>&1; then
     echo "Volume 'lfs-sources' created successfully."
 fi
 
-
-# Ensure build directory exists
-if [ ! -d "$BUILD_DIR" ]; then
-    echo "Creating build directory at $BUILD_DIR..."
-    mkdir -p "$BUILD_DIR"
+# Check if required build volume exists; if not, create it
+if ! "$ENGINE" volume inspect "$BUILD_VOLUME" >/dev/null 2>&1; then
+    echo "Volume '$BUILD_VOLUME' not found. Creating it..."
+    "$ENGINE" volume create "$BUILD_VOLUME" >/dev/null
 fi
 
 # Build the image
@@ -58,8 +57,7 @@ fi
 # Run the container with the mounted directory
 echo "Starting container..."
 exec "$ENGINE" run -it --cap-add=SYS_ADMIN --name "$CONTAINER_NAME" \
-
-    -v "$BUILD_DIR:/mnt/lfs" \
+    -v "$BUILD_VOLUME:/mnt/lfs" \
     -v lfs-sources:/mnt/lfs/sources \
     "$IMAGE_NAME" bash -c "
         echo 'Fixing permissions on /mnt/lfs...' ;
