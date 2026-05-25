@@ -38,8 +38,11 @@ RUN if [ -e /etc/bash.bashrc ]; then \
 # Force /bin/sh → bash
 RUN ln -sf /bin/bash /bin/sh
 
-# Create lfs user with sudo rights
-RUN useradd -m -s /bin/bash lfs && \
+# Create lfs user with sudo rights. Ubuntu 24.04 includes an ubuntu user at
+# UID 1000; remove it so host-owned bind mounts resolve to lfs instead.
+RUN if id ubuntu >/dev/null 2>&1; then userdel -r ubuntu; fi && \
+    groupadd -g 1000 lfs && \
+    useradd -m -u 1000 -g 1000 -s /bin/bash lfs && \
     echo "lfs ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 # Setup working directory
@@ -61,4 +64,3 @@ USER lfs
 WORKDIR /home/lfs
 
 CMD ["/bin/bash", "--login"]
-

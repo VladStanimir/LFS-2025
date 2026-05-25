@@ -16,7 +16,7 @@ echo "Creating limited directory layout in \$LFS..."
 sudo mkdir -pv $LFS/{etc,var} $LFS/usr/{bin,lib,sbin}
 
 for i in bin lib sbin; do
-  sudo ln -svf usr/$i $LFS/$i
+  sudo ln -svfT usr/$i $LFS/$i
 done
 
 case $(uname -m) in

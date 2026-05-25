@@ -26,7 +26,7 @@ esac
 echo "Cleaning stale mount points..."
 
 # Unmount if mounted
-for mp in dev/pts dev proc sys run; do
+for mp in dev/null dev/pts dev proc sys run; do
     if mountpoint -q "$LFS/$mp"; then
         echo "Unmounting stale $LFS/$mp..."
         sudo umount -l "$LFS/$mp"
@@ -39,8 +39,18 @@ sudo rm -rf $LFS/dev $LFS/proc $LFS/sys $LFS/run
 echo "Recreating fresh mount directories..."
 sudo mkdir -pv $LFS/{dev,proc,sys,run}
 
-echo "Mounting /dev..."
-sudo mountpoint -q $LFS/dev || sudo mount -v --bind /dev $LFS/dev
+echo "Mounting tmpfs on /dev..."
+sudo mountpoint -q "$LFS/dev" || sudo mount -vt tmpfs -o mode=755 tmpfs "$LFS/dev"
+
+echo "Creating /dev support directories..."
+sudo mkdir -pv "$LFS/dev/pts" "$LFS/dev/shm"
+
+echo "Ensuring /dev/null is a device..."
+if [ ! -c "$LFS/dev/null" ]; then
+    sudo rm -f "$LFS/dev/null"
+    sudo touch "$LFS/dev/null"
+    sudo mount -v --bind /dev/null "$LFS/dev/null"
+fi
 
 echo "Mounting devpts..."
 sudo mountpoint -q $LFS/dev/pts || \
